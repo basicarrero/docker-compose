@@ -1,0 +1,51 @@
+version: '2'
+
+services:
+  database:
+    image: basiliocarreroavanttic/db_fix11g:12.2.0.1-ee
+    container_name: obieeDB
+    hostname: obieeDB
+    volumes:
+      - airbus_vol:/opt/oracle/oradata
+    ports:
+      - 1521:1521
+    networks:
+      intra_net:
+        aliases:
+         - ol7-obiee
+
+  biplatform:
+    image: basiliocarreroavanttic/obiee:11.1.1.9.0
+    container_name: obieeServer
+    hostname: obieeServer
+    volumes:
+      - airbus_vol:/u01/oracle/user_projects
+    networks:
+      intra_net:
+        aliases:
+         - ol7-obiee
+    ports:
+      - 9500-9999
+#    env_file:
+#      - obiee.env.list
+    environment:
+       - RACK_ENV=development
+       - ADMIN_USERNAME=weblogic
+       - ADMIN_PASSWORD=welcome1
+       - DB_SID=ORCLCDB.localdomain
+       - DB_SERVICE=ORCLPDB1.localdomain
+       - DB_HOST=ol7-obiee
+       - DB_PORT=1521
+       - DB_USERNAME=sys
+       - DB_PASSWORD=Oradoc_db1
+       - SCHEMA_PREFIX=DEV
+       - SCHEMA_PASSWORD=oracle
+       - DB_WAIT_TIMEOUT=1800
+       - BI_SCHEMA_PASSWORD=BiPlatformPasswd1
+       - MDS_SCHEMA_PASSWORD=MdsPasswd1
+
+volumes:
+  airbus_vol:
+
+networks:
+  intra_net:
